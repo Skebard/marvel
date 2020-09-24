@@ -3,6 +3,7 @@ const ROOT_URL = "https://gateway.marvel.com:443/v1/public/";
 const API_KEY = "396af5542c62f03d7cb9706e3eb6b553";
 const HASH = "bba10d3874e2070306f4f23aea0858bb";
 const TIME_STAMP = 1;
+const ENDING_URL = "?ts="+TIME_STAMP+"&apikey="+API_KEY+"&hash="+HASH;
 const RESULTS_PER_PAGE = 12;
 const WAIT = 1;
 const MAX_LIMIT = 100; //max number of results for request to the API
@@ -15,9 +16,10 @@ let selectCategory = document.getElementById("categories-id");
 let dropdownBtn = document.getElementById("drop-down-btn");
 let btnSearch = document.getElementById("search-btn");
 let suggestionsContainer = document.getElementById("suggestions-id");
-let searchResults = document.querySelector(".search-results");
+let searchResults = document.querySelector("#search-results-id");
 let pagination = document.getElementById("numeration-id");
 let loading = document.getElementById("loading-id");
+let expandResult = document.getElementById("expanded-result-id");
 
 
 
@@ -105,7 +107,6 @@ inputSearch.addEventListener("focus", () => {
 //In order to get the "click" event from the suggestionsContainer we place a
 //delay before hidding the suggestions,if not the click event will not be triggered
 inputSearch.addEventListener("blur", (e) => {
-    console.log(e.target);
     setTimeout(() => suggestionsContainer.classList.add("hidden"), 200);
 });
 
@@ -178,6 +179,7 @@ async function makeSearch() {
     console.log(currentText);
     searchResults.innerHTML = "";
     pagination.innerHTML = "";
+    expandResult.innerHTML ="";
     let searchWord;
     if (currentText.indexOf("(") !== -1) {
         searchWord = currentText.slice(0, currentText.indexOf("("));

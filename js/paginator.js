@@ -58,7 +58,6 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
             //     btn.className="page-num"
                 if(this.totalPages>5 && i>3 && i<this.totalPages){
                     break;
-                    btn.classList.add("hidden");
                 }
             
             ul.appendChild(btn);
@@ -109,12 +108,20 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
                 let w = await this.previousPage();
                 if(w){
                     let prev = active.previousElementSibling;
-                    if(this.currentPage.id!==parseInt(prev.textContent)){
-
-                    }
                     if(prev.classList.contains("ellipsis")){
-                        prev = prev.previousElementSibling;
+                        console.log("Ellipsis");
+                        let prevPrev = prev.previousElementSibling;
+                        if(parseInt(prevPrev.textContent)===this.currentPage.id){
+                            console.log("remove ellipsis")
+                            prev.remove();
+                            prev = prevPrev;
+                        }
                     }
+                    if(this.currentPage.id!==parseInt(prev.textContent)){
+                        prev = createLi(this.currentPage.id,"page-num");
+                        active.insertAdjacentElement("beforebegin",prev)
+                    }
+
                     active.classList.remove("active");
                     prev.classList.remove("hidden");
                     prev.classList.add("active");
@@ -124,6 +131,13 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
                 console.log(this.currentPage);
                 if(w){
                     let next = active.nextElementSibling;
+                    if(next.classList.contains("ellipsis")){
+                        let nextNext = next.nextElementSibling;
+                        if(parseInt(nextNext.textContent)===this.currentPage.id){
+                            next.remove();
+                            next = nextNext;
+                        }
+                    }
                     if(this.currentPage.id !== parseInt(next.textContent)){
                         next = createLi(this.currentPage.id,"page-num");
                         active.insertAdjacentElement("afterend",next);
@@ -207,8 +221,6 @@ function Page(id,data,type,container){
 
 }
 Page.prototype.create = function(data,type){
-    console.log(type);
-    console.log(data);
     let cards = [];
     data.forEach((el)=>{
         switch(type){
