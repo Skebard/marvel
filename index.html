@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+    <title>Marvel searcher</title>
+    <script defer src="js/card.js"></script>
+    <script defer src="js/paginator.js"></script>
+    <script defer src="js/marvelComics.js"></script>
+    <script defer src="js/trie.js"></script>
+    <script defer src="js/script.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/9547750bbd.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <header>
+        <div class="left-nav">
+            <div class="logo">Logo</div>
+            <div id="drop-down-btn" class="icon dropdown"><i class="fa fa-bars"></i></div>
+
+            <ul id="categories-id" class="categories">
+                <li class="category ">Characters</li>
+                <li class="category active">Comics</li>
+                <li class="category">Series</li>
+                <li class="category">Creators</li>
+            </ul>
+        </div>
+        <div class="right-nav">
+            <div class="search-wrapper">
+                <input id="search-id" class="input-search" type="text">
+                <ul id="suggestions-id" class="suggestions hidden">
+                    <li class="active">Suggestion 1</li>
+                    <li>Suggestion 2</li>
+                    <li>Suggestion 3</li>
+                    <li>Suggestion 4</li>
+                    <li>Suggestion 5</li>
+                    <li>Suggestion 6</li>
+                </ul>
+            </div>
+            <i class="fas fa-search"></i>
+        </div>
+    </header>
+    <main>
+        <div id="loading-id" class="img-container hidden">
+            <img id="bnw" src="http://preview.ibb.co/kEMjQb/marvel.png" width="300">
+            <img id="colored" src="http://preview.ibb.co/fhn2BG/marvel.jpg" width="300">
+          </div>
+        <ul class="search-results comics">
+            <!-- <li>
+                <div class="poster">
+
+                </div>
+                <div class="info">
+                    <h2>Title</h2>
+                    <p>asfasdfasfa daf what am i doing this is a very good comic just read it come one don't be shy
+                    </p>
+                    <h3>more info<i class="plus">+</i></h3>
+                </div>
+            </li> -->
+
+
+        </ul>
+        <div id="numeration-id" class="pagination">
+            <!-- <div class="prev-page-btn page-arrow"> << </div> -->
+            <!-- <ul  class="numeration">
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+                <li class = "ellipsis">...</li>
+                <li>1</li>
+                <li>1</li>
+                <li>1</li>
+            </ul> -->
+
+            <!-- <div class="next-page-btn page-arrow"> >> </div> -->
+
+
+        </div>
+
+    </main>
+    <footer></footer>
+</body>
+
+</html>

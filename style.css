@@ -1,0 +1,366 @@
+*{
+    box-sizing:border-box;
+    padding:0;
+    margin:0;
+}
+
+html{
+    height:100%;
+}
+body{
+    min-height:100%;
+    padding-bottom:4rem;
+    position:relative;
+    background-color:black;
+}
+ul{
+    list-style-type:none;
+}
+
+main{
+    width:100%;
+}
+
+.hidden{
+    display:none;
+}
+
+header{
+    padding-top:1rem;
+    background-color:black;
+    display:flex;
+    justify-content: space-between;
+    flex-wrap:wrap;
+    font-size:1.5rem;
+}
+.dropdown > i{
+    font-size:3rem;
+}
+.logo{
+    color:white;
+}
+
+.left-nav .dropdown{
+    display:none;
+    z-index:20;
+    cursor:pointer;
+}
+.left-nav, .right-nav{
+    display:flex;
+    background-color:black;
+
+}
+.left-nav{
+    display:flex;
+    padding: 0 1rem;
+}
+
+
+.left-nav .dropdown{
+    color:white;
+    display:none;}
+.left-nav .categories > .active{
+    color:orange;
+}
+
+.right-nav{
+    position:relative;
+    padding: 0 1rem;
+    width:35%;
+    align-items:center;
+}
+.right-nav .fa-search{
+    margin-left:0.5rem;
+    color:white;
+}
+
+/** INPUT SEARCH*/
+.search-wrapper{
+    flex-grow:1;
+    position:relative;
+}
+.input-search{
+    width:100%;
+    outline:none;
+    padding-left:1rem;
+    font-size:2rem;
+}
+.suggestions{
+    position:absolute;
+    left:0;
+    top:100%;
+    width:100%;
+    background-color:red;
+    z-index:5;
+}
+.suggestions > li{
+    padding:0.2rem 0;
+}
+.suggestions > li.active{
+    background-color: grey;
+}
+
+
+.categories{
+    display:flex;
+    padding: 0 1rem;
+}
+.categories >li{
+    padding:0 1rem;
+    user-select:none;
+    cursor:pointer;
+    color:white;
+}
+
+.search-results{
+    padding-top:2rem;
+    width:97%;
+    position:relative;
+    right:0;
+    left:0;
+    margin:0 auto;
+    background-color:black;
+    display:flex;
+    justify-content:flex-start;
+    flex-wrap: wrap;
+}
+
+
+/** SEARCH RESULTS*/
+/*  
+
+*/
+.search-results.comics > li{
+    height:425px;
+    width: 275px;
+}
+
+
+
+.search-results > li{
+
+    flex-shrink: 0;
+    perspective:1000px;
+    perspective-origin:center;
+    overflow:hidden;
+    color:white;
+    position:relative;
+    margin:0.5rem;
+}
+.search-results > li > div{
+    background-size:cover;
+    background-position:center;
+    width:100%;
+    height:100%;
+}
+.search-results div.poster,  .search-results > li{
+    transition-delay:250ms;
+}
+.search-results div.info{
+    transition-delay: 800ms;
+}
+
+.search-results .poster{
+    transform-style: preserve-3d;
+    transition:all 0.6s ease-in;
+    box-shadow: inset 0 0 1rem 0.4rem black;
+}
+.search-results .info{
+    transition:all 0.3s;
+}
+.search-results li:hover div.poster{
+    transform: scale(1.5) rotate(20deg) rotateY(180deg);
+    opacity:0.6;
+}
+.search-results li:hover div.info{
+    
+    transition: 0s;
+    transition-delay:0.6s;
+    transition-property:opacity;
+    opacity:1;
+}
+.search-results li{
+    box-shadow: 0 0 1rem 0.4 transparent;
+    transition: 0.6s;
+}
+.search-results li:hover{
+    /* border: 2px solid red; */
+    box-shadow: 0 0 1rem 0.4rem red;
+}
+.search-results .info{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    opacity:0;
+}
+
+.search-results > :nth-child(1) div.poster{
+    background-image: url("http://i.annihil.us/u/prod/marvel/i/mg/3/70/5d38a23066e83.jpg");
+}
+
+
+
+/* Comics */
+.comics .info .price{
+    text-align: right;
+}
+.comics .info{
+    display:flex;
+    flex-direction:column;
+    justify-content: flex-end;
+    padding:1rem;
+}
+.comics .info h3{
+    display:flex;
+    align-items:center;
+}
+.comics .info .plus{
+    margin-left:1rem;
+    font-size:2rem;
+    font-weight:900;
+}
+.comics .info p{
+    position:relative;
+    max-height: 300px;
+    text-overflow:ellispsis;
+    overflow:hidden;
+}
+
+
+
+
+
+.comics .info > h2{
+    
+}
+
+/* more info*/
+.more-info{
+    cursor:pointer;
+    font-size:1.4rem;
+    outline:none;
+    border:none;
+    font-weight:700;
+
+}
+
+/**Pagination **/
+.pagination.hidden{
+    display:none;
+}
+.pagination{
+    background-color:blue;
+    display:flex;
+    justify-content:center;
+    width:100%;
+    align-items:center;
+}
+.numeration{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+.numeration > li, .page-arrow{
+    border:2px solid white;
+    color:white;
+    font-size:1.5rem;
+    font-weight:900;
+    padding:0.5rem;
+    margin:0.5rem;
+    user-select:none;
+    cursor:pointer;
+}
+.numeration > li.active{
+    background-color:orange;
+}
+.page-arrow{
+    transform:scale(0.8,1);
+}
+.numeration > li.ellipsis{
+    border:none;
+    margin:0.5rem 0;
+}
+
+
+footer{
+    width:100%;
+    position:absolute;
+    bottom:0;
+    height:4rem;
+    border:1px solid black;
+}
+
+/**Transition animation**/
+#bnw{
+    position: absolute;
+    top:40vh;
+    
+    left:50px;
+  }
+  #colored{
+    position: absolute;
+    top:40vh;
+    left:50px;
+    clip-path:polygon(0 0,0.01% 0,0.01% 100%,0 100%);
+  }
+  .img-container{
+    position: relative;
+    width:300px;
+    margin:0px auto;
+  }
+
+
+@media screen and (max-width: 900px){
+    header{
+        flex-direction:column;
+    }
+    .left-nav{
+        flex-direction: row-reverse;
+        justify-content:flex-end;
+    }
+    .left-nav .dropdown{
+        display:block;
+    }
+    .left-nav .categories{
+        position:fixed;
+        width:100%;
+        height:100%;
+        background-color:grey;
+        z-index:10;
+        top:0;
+        left:0;
+        display:none;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        display:none;
+    }
+    .left-nav .category{
+        font-size:2rem;
+        width:100%;
+    }
+    .left-nav .category:hover{
+        text-align:center;
+        background-color:black;
+    }
+    .left-nav .categories.show{
+        display:flex;
+    }
+    .left-nav .categories > li.active{
+        background-color:black;
+        color:orange;
+    }
+    .right-nav{
+        width:100%;
+        padding:0 5%;
+    }
+
+}
+
+@media screen and (max-width: 650px){
+    .search-results{
+        justify-content:space-evenly;
+    }
+}
