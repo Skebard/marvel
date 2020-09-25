@@ -1,12 +1,12 @@
 
-/*
-count
-limit 
-offset
-results[array]
-
-total
-*/
+/**
+ * Constructor of Paginator objects that search data in the marvel API and manages how it is displayed
+ * @param {string} text text to use for searching comics, characters, etc
+ * @param {string} type indicates the type of the results. It can take the following values: "characters", "creators", "comics","series".
+ * @param {HTMLelement} pageContainer HTML element "ul" preferible where the results will be allocated
+ * @param {HTMLelement} paginationContainer container to place the numbers of the pages to navigate through the results
+ * @param {HTMLelement} loadingAnimation animation to be shown while making request to the API
+ */
 function Paginator(text,type,pageContainer,paginationContainer=undefined,loadingAnimation){
     this.pages =[];
     this.transition = loadingAnimation;
@@ -24,8 +24,6 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
             return true;
         }
         else{
-
-            console.log("You are in the las page")
             return false;
         }
     }
@@ -36,43 +34,30 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
             let w = await this.pageN(prevPage);
             return true;
         }else{
-            console.log("you are in the first page");
             return false;
         }
     }
 
-    this.remove = function(){
-        this.htmlContainer.innerHTML="";
-        this.htmlPagination.innerHTML ="";
-    }
-    this.expandCard = function(){}
+    // this.remove = function(){
+    //     this.htmlContainer.innerHTML="";
+    //     this.htmlPagination.innerHTML ="";
+    // }
     this.createNumeration = function(){
         let ul = document.createElement("ul");
         ul.classList.add("numeration");
         this.htmlPagination.append(ul);
         for(let i=1; i<=this.totalPages; i++){
             let btn = createLi(i,"page-num");
-            // document.createElement("li");
-
-            //     btn.textContent = i;
-            //     btn.className="page-num"
                 if(this.totalPages>5 && i>3 && i<this.totalPages){
                     break;
                 }
-            
             ul.appendChild(btn);
         }
         if(this.totalPages>5){
             let ellipsis = createLi("...","ellipsis");
-            // document.createElement("li");
-            // ellipsis.textContent = "...";
-            // ellipsis.className = "ellipsis";
             ul.children[2].insertAdjacentElement("afterend",ellipsis);
 
             let last = createLi(this.totalPages,"page-num");
-            // document.createElement("li");
-            // last.classNam="page-num";
-            // last.textContent = this.totalPages;
             ul.appendChild(last);
         }
         ul.children[0].classList.add("active");
@@ -153,9 +138,6 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
 
         });
 
-    }
-    this.createLoadMore = function(){
-        console.log("more")
     }
 
     initialization(this);
@@ -252,7 +234,7 @@ Page.prototype.remove = function(){
 }
 
 
-
+//Display animation to indicate that the search has not given any result
 function noResults(){
     let noResultCont = document.querySelector(".glow-div");
     noResultCont.classList.remove("no-results");
@@ -265,55 +247,87 @@ function noResults(){
     setTimeout(()=>{
         noResultCont.classList.add("no-results");
     },1700);
+}
 
-    console.log("no results");
+
+/**
+ * Makes a request to the Marvel API and returns a Promise with the data
+ * @param {string} text word/sentece user is looking for
+ * @param {string} type indicates the type of the results. It can take the following values: "characters", "creators", "comics","series". If different the request will fail
+ * @param {int} limit number of results. Can not be greater than 100
+ * @param {int} offset from which position get the results
+ */
+function getData(text, type, limit, offset) {
+    type = type.toLowerCase(); // convert to lower case to avoid any problem
+    let requestUrl = ROOT_URL;
+    requestUrl += type.toLowerCase() + "?";
+    if (type === "characters" || type === "creators") {
+        requestUrl += "nameStartsWith";
+    } else {
+        requestUrl += "titleStartsWith";
+    }
+    requestUrl += "=" + text + "&";
+    requestUrl += "limit=" + limit + "&offset=" + offset + "&";
+    requestUrl += "ts=" + TIME_STAMP + "&";
+    requestUrl += "apikey=" + API_KEY + "&"
+    requestUrl += "hash=" + HASH;
+    //console.log(requestUrl);
+    return fetch(requestUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            return data;
+        }).catch(error => console.log(error));
 }
 
 
 
-/*
-
-characters
-    name
-    description
-    image
-
-comics
-    name/title  
-    description
-    dates
-    image
-series
-    title
-    description
-    image
-creators
-    firstName
-    middleName
-    lastName
-    fullName
-    image   most of them they don't have image -> what to do? put default image
-
-
-we have diffetent image sizes and relations
-
-*/
-
-
-    // let data = await getData("hulk","comics",4,0);
-    // console.log(data);
-    // console.log(data.data[1]);
-    // //let myData = data.data.results;
-    // // myData.forEach(d=>{
-    // //     let myComic = new Comic(d);
-    // //     myComic.create();
-    // // });
-
-//the paginator consists of Pages and the respective Numbers of those pages
-
-function Relation(card){
-
+//return all the names/titles of the selected type
+//Notice that this function is not called anywhere since it has only been used once to get the names
+//of the comics in order to create our Trie.
+async function getAll(type) {
+    //make initial request to get total number of data
+    //then create the rest of requests
+    let names = [];
+    let requestUrl = ROOT_URL + type + "?ts=" + TIME_STAMP + "&apikey=" + API_KEY + "&hash=" + HASH + "&limit=" + MAX_LIMIT;
+    let data = await fetch(requestUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            return data.data;
+            //promise all
+        })
+        .catch(error => console.log(error));
+    console.log(data);
+    let apiRequests = [];
+    console.log(Math.ceil((data.total - 100) / MAX_LIMIT));
+    for (let i = 0; i < Math.ceil((data.total - 100) / MAX_LIMIT); i++) {
+        let nextRequestUrl = ROOT_URL + type + "?ts=" + TIME_STAMP + "&apikey=" + API_KEY + "&hash=" + HASH + "&limit=" + MAX_LIMIT + "&offset=" + (i + 1) * MAX_LIMIT;
+        //by try and error I have determined that the API do not respond when performing too many requests consequently ( more than 70 more or less), 
+        //therefore I was getting the data from  50 to 50
+        if (i > 399 && i < 450) { //!nt done
+            apiRequests.push(fetch(nextRequestUrl).then(response => response.json()));
+        }
+    }
+    let pause = await Promise.all(apiRequests).then((data) => {
+        console.log(data);
+        data.forEach(d => {
+            names.push(...d.data.results.map(r => r.title));
+        })
+    })
+    let prev = [];
+    if (localStorage.marvelComics) {
+        prev = JSON.parse(localStorage.marvelComics);
+    }
+    prev.push(...names);
+    localStorage.marvelComics = JSON.stringify(prev);
+    return names;
 }
-Relation.prototype.hide = function(){}
-Relation.prototype.display = function(){}
-Relation.prototype.create = function(){}

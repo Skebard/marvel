@@ -9,7 +9,6 @@ const WAIT = 1;
 const MAX_LIMIT = 100; //max number of results for request to the API
 const NUM_SUGGESTIONS = 10; //number of suggestions for the user when searching
 
-
 //**HTML elements */
 let inputSearch = document.getElementById("search-id");
 let selectCategory = document.getElementById("categories-id");
@@ -23,67 +22,59 @@ let expandResult = document.getElementById("expanded-result-id");
 let noResultsAnimation = document.getElementById("no-results-animation");
 
 
+//The idea was to create a trie for every category ( comics, characters,...) but it requires to have the data in advance. 
+//A better approach is to implement the tries in the server side but since this project was only about front end I have developed
+//a small try just for the comics category.
 
-
-//! TO DO
-/**
- * Fix pagination 
- *  show more info
- *  link sries, comics,characters,creators
- */
-
-//Create Tries
+//Create Trie
 let comicsTrie = createTrie(comics);
 
-
 let currentCategory = "comics";
+let currentText = "";       //text in the search bar
+let timeOut;                //variable that allows to clear the setTimeout
+let autoSearch = false;     //specifies if searches will be performed automatically after certain time WAIT seconds
+let suggestionsPos = 0;     //suggestions selected in the search bar
+let myPaginator;            // to be used as a Paginator object
 
-//dropdown button
-dropdownBtn.addEventListener("click", () => {
-    selectCategory.classList.toggle("show");
-});
 
-//CATEGORY SELECTION
+//* CATEGORY SELECTION*/
+//select category when click on it
 selectCategory.addEventListener("click", (e) => {
     if (e.target.classList.contains("category")) {
         selectCategory.querySelector(".active").classList.remove("active");
         e.target.classList.add("active");
         currentCategory = e.target.textContent.toLowerCase();
-        console.log(currentCategory);
+        selectCategory.classList.remove("show"); // hide categories on small screens for better user experience
     }
 });
 
+//Display categories when using small screens
+dropdownBtn.addEventListener("click", () => {
+    selectCategory.classList.toggle("show");
+});
 
-let currentText = "";
-let timeOut;
-let autoSearch = false; //specifies if searches will be performed automatically
-let myTrie = new Trie();
-let suggestionsPos = 0;
+/***********end category selection */
 
+//** SEARCHES */
 
-
+//Perform search when clicking search icon
 btnSearch.addEventListener("click",()=>{
     makeSearch();
 });
 
-//**INPUT SEARCH
+//Search when user presses enter
 inputSearch.addEventListener("keyup", (e) => {
-    //Search
-    if (inputSearch.value !== currentText) {
+    if (inputSearch.value !== currentText) {    //make sure that keys without content have been presed (arrows,home,etc)
         currentText = inputSearch.value;
-        //display new suggestions
-        displaySuggestions(currentText, comicsTrie);
+        displaySuggestions(currentText, comicsTrie);       //display new suggestions
         if (autoSearch === true) {
             clearTimeout(timeOut);
             timeOut = setTimeout(makeSearch, WAIT * 1000);
         }
     }
-
-
-    if (e.key === "Enter") {
-        //check if suggestion is selected
+    if (e.key === "Enter") {    //search if user pressed enter
         let suggestion = suggestionsContainer.querySelector(".active");
-        if (suggestion) {
+        if (suggestion) {          //check if suggestion is selected
             currentText = suggestion.textContent;
         }
         makeSearch();
@@ -91,7 +82,7 @@ inputSearch.addEventListener("keyup", (e) => {
     }
 });
 
-
+//Move through suggestions using arrows
 inputSearch.addEventListener("keydown", (e) => {
     console.log(e.code);
     switch (e.key) {
@@ -106,6 +97,7 @@ inputSearch.addEventListener("keydown", (e) => {
     }
 });
 
+//Show suggestions when search bar is focused
 inputSearch.addEventListener("focus", () => {
     suggestionsContainer.classList.remove("hidden");
 });
@@ -117,15 +109,15 @@ inputSearch.addEventListener("blur", (e) => {
     setTimeout(() => suggestionsContainer.classList.add("hidden"), 200);
 });
 
-
-
-
+//Make search when user clicks on a suggestion
 suggestionsContainer.addEventListener("click", (e) => {
     if (e.target.tagName === "LI") {
         currentText = e.target.textContent;
         makeSearch();
     }
 });
+
+//Indicate to user which suggestion is being selected
 suggestionsContainer.addEventListener("mouseover", (e) => {
     if (e.target.tagName === "LI") {
         let active = suggestionsContainer.querySelector(".active");
@@ -134,9 +126,9 @@ suggestionsContainer.addEventListener("mouseover", (e) => {
         }
         e.target.classList.add("active");
     }
-
 });
 
+/***********end search */
 
 
 //** Transition animation */
@@ -175,49 +167,44 @@ function doFirst(x) {
 
 
 
-
-
-let myPage;
-let myPaginator;
+//Cleans the screen and makes a search by creating a new Paginator object
+//that will manage the page till a new search if performed
 async function makeSearch() {
-    
     inputSearch.value = currentText;
     suggestionsContainer.innerHTML = "";
-    console.log("*******************");
-    console.log(currentText);
-    searchResults.innerHTML = "";
+    console.log("*********************");
+    console.log("Selected word:"+ currentText);
+    searchResults.innerHTML = "";   //make sure nothing is shown in the screen
     pagination.innerHTML = "";
     expandResult.innerHTML ="";
     noResultsAnimation.classList.add("hide");
     let searchWord;
+    //searches with "(" will not give any, or none signigicant, result ("API behaviour") so we try to improve the chances of getting results
     if (currentText.indexOf("(") !== -1) {
         searchWord = currentText.slice(0, currentText.indexOf("("));
     } else {
         searchWord = currentText;
     }
-    console.log(searchWord);
-    if(myPaginator){
-        if(myPaginator.loading===false){
+    console.log("Word used for the search :"+searchWord);
+    if(myPaginator){    //Check if it is the first search
+        if(myPaginator.loading===false){    //make sure the previous search has finished to avoid getting many responses simultaneously
             myPaginator = new Paginator(searchWord, currentCategory, searchResults, pagination,loading);
         }
     }else{
         myPaginator = new Paginator(searchWord, currentCategory, searchResults, pagination,loading);
     }
-
-
-
-    console.log("*******************");
+    console.log("*********************");
 }
 
+
+//Display suggestions, if exist, below the search bar
 function displaySuggestions(word, trie) {
     console.log("******Suggestions*******");
     //in oder to find more results the words will be  trimmed and capitalized
     word = word.trim();
     if (word !== "") {
         word = capitalizeSentence(word);
-        console.log(word);
     }
-
     suggestionsContainer.innerHTML = "";
     let foundSuggestions = trie.getNsuggestions(word, NUM_SUGGESTIONS);
     if (foundSuggestions) {
@@ -229,11 +216,12 @@ function displaySuggestions(word, trie) {
     }
 }
 
+//capitalizes all the words separated by a space
 function capitalizeSentence(sentence) {
     return sentence.split(" ").map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
 }
 
-
+//Activate or highligth the next suggestion
 function nextSuggestion() {
     if (suggestionsContainer.children.length) {
         let activeSug = suggestionsContainer.querySelector(".active");
@@ -249,6 +237,7 @@ function nextSuggestion() {
     }
 }
 
+//Activate or highligth the previous suggestion
 function prevSuggestion() {
     if (suggestionsContainer.children.length) {
         let activeSug = suggestionsContainer.querySelector(".active");
@@ -262,151 +251,7 @@ function prevSuggestion() {
     }
 }
 
-
-
-
-myTrie.insert("ant");
-myTrie.insert("anton");
-myTrie.insert("antonio");
-myTrie.insert("antZZZ");
-myTrie.insert("antYYY");
-myTrie.insert("an ant antonio")
-myTrie.insert("hi");
-myTrie.insert("hello");
-myTrie.insert("hint");
-myTrie.insert("bern");
-myTrie.insert("berny");
-myTrie.insert("berna");
-myTrie.insert("bernat");
-myTrie.insert("berny crack");
-
-
-// Not all the images have the same size but most of them have a ratius close to 1:1
-//characters 1:1
-//comics 550:850 px
-
-
-
-
-
-//characters
-//creators
-//series
-//comics
-//what can a card do?
-
-
-//the search displays all the similar results
-
-document.addEventListener("click", (e) => {
-
-    if (e.target.classList.contains("more-info")) {
-        console.log('pressed');
-        //dipslya infod
-    }
-});
-
-
-function displayInfo() {
-    //expand card
-    //paginator.expandCard(id)
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-function getData(text, type, limit, offset) {
-    type = type.toLowerCase(); // convert to lower case to avoid any problem
-    let requestUrl = ROOT_URL;
-    requestUrl += type.toLowerCase() + "?";
-    if (type === "characters" || type === "creators") {
-        requestUrl += "nameStartsWith";
-    } else {
-        requestUrl += "titleStartsWith";
-    }
-    requestUrl += "=" + text + "&";
-    requestUrl += "limit=" + limit + "&offset=" + offset + "&";
-    requestUrl += "ts=" + TIME_STAMP + "&";
-    requestUrl += "apikey=" + API_KEY + "&"
-    requestUrl += "hash=" + HASH;
-    console.log(requestUrl);
-    return fetch(requestUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-            return data;
-        }).catch(error => console.log(error));
-}
-
-//bba10d3874e2070306f4f23aea0858bb
-
-//return all the names/titles of the selected type
-async function getAll(type) {
-    //make initial request to get total number of data
-    //then create the rest of requests
-    let names = [];
-    let requestUrl = ROOT_URL + type + "?ts=" + TIME_STAMP + "&apikey=" + API_KEY + "&hash=" + HASH + "&limit=" + MAX_LIMIT;
-    let data = await fetch(requestUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            return data.data;
-            //promise all
-        })
-        .catch(error => console.log(error));
-    console.log(data);
-    let apiRequests = [];
-    console.log(Math.ceil((data.total - 100) / MAX_LIMIT));
-    for (let i = 0; i < Math.ceil((data.total - 100) / MAX_LIMIT); i++) {
-        let nextRequestUrl = ROOT_URL + type + "?ts=" + TIME_STAMP + "&apikey=" + API_KEY + "&hash=" + HASH + "&limit=" + MAX_LIMIT + "&offset=" + (i + 1) * MAX_LIMIT;
-        if (i > 399 && i < 450) { //!not done
-            apiRequests.push(fetch(nextRequestUrl).then(response => response.json()));
-        }
-    }
-    let pause = await Promise.all(apiRequests).then((data) => {
-        console.log(data);
-        data.forEach(d => {
-            names.push(...d.data.results.map(r => r.title));
-        })
-        console.log(names);
-    })
-    console.log("hi");
-    let prev = [];
-    console.log(localStorage.marvelComics);
-    if (localStorage.marvelComics) {
-        prev = JSON.parse(localStorage.marvelComics);
-    }
-    prev.push(...names);
-    localStorage.marvelComics = JSON.stringify(prev);
-    return names;
-}
-
-
-
-function loadTries() {
-
-}
-
-
+//Creates a Trie data structure given an array of strings
 function createTrie(array) {
     let myTrie = new Trie();
     for (let i = 0; i < array.length; i++) {
