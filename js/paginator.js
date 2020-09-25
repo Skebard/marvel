@@ -200,6 +200,7 @@ Paginator.prototype.pageN = async function(pageNumber){
         page = page[0];
     }else{
         let data = await getData(this.text,this.type,RESULTS_PER_PAGE,(pageNumber-1)*RESULTS_PER_PAGE);
+        console.log(data);
         if(!this.totalPages){
             this.totalPages = Math.ceil(data.data.total/RESULTS_PER_PAGE);
         }
@@ -253,6 +254,18 @@ Page.prototype.remove = function(){
 
 
 function noResults(){
+    let noResultCont = document.querySelector(".glow-div");
+    noResultCont.classList.remove("no-results");
+    noResultsAnimation.classList.remove("hide");
+    let noResult = document.querySelector(".glow-div > img");
+    noResult.style.display="none";
+    let snap = document.querySelector("#snap-id");
+    snap.classList.remove("hide");
+    snap.classList.add("snap");
+    setTimeout(()=>{
+        noResultCont.classList.add("no-results");
+    },1700);
+
     console.log("no results");
 }
 

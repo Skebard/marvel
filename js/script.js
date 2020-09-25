@@ -14,12 +14,13 @@ const NUM_SUGGESTIONS = 10; //number of suggestions for the user when searching
 let inputSearch = document.getElementById("search-id");
 let selectCategory = document.getElementById("categories-id");
 let dropdownBtn = document.getElementById("drop-down-btn");
-let btnSearch = document.getElementById("search-btn");
+let btnSearch = document.getElementById("search-btn-id");
 let suggestionsContainer = document.getElementById("suggestions-id");
 let searchResults = document.querySelector("#search-results-id");
 let pagination = document.getElementById("numeration-id");
 let loading = document.getElementById("loading-id");
 let expandResult = document.getElementById("expanded-result-id");
+let noResultsAnimation = document.getElementById("no-results-animation");
 
 
 
@@ -58,6 +59,12 @@ let timeOut;
 let autoSearch = false; //specifies if searches will be performed automatically
 let myTrie = new Trie();
 let suggestionsPos = 0;
+
+
+
+btnSearch.addEventListener("click",()=>{
+    makeSearch();
+});
 
 //**INPUT SEARCH
 inputSearch.addEventListener("keyup", (e) => {
@@ -173,6 +180,7 @@ function doFirst(x) {
 let myPage;
 let myPaginator;
 async function makeSearch() {
+    
     inputSearch.value = currentText;
     suggestionsContainer.innerHTML = "";
     console.log("*******************");
@@ -180,6 +188,7 @@ async function makeSearch() {
     searchResults.innerHTML = "";
     pagination.innerHTML = "";
     expandResult.innerHTML ="";
+    noResultsAnimation.classList.add("hide");
     let searchWord;
     if (currentText.indexOf("(") !== -1) {
         searchWord = currentText.slice(0, currentText.indexOf("("));

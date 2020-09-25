@@ -1,5 +1,4 @@
 
-
 function TrieNode (letter=""){
     this.val = letter;
     this.children = {};

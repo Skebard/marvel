@@ -61,9 +61,6 @@ async function createRelation(data){
     let secTitle = document.createElement("div");
     secTitle.className="title-dropdown";
     secTitle.textContent = data.type.toUpperCase();
-
-    
-
     let ul = document.createElement("ul");
     ul.className = "search-results comics relation";
     container.append(secTitle,ul)
@@ -71,6 +68,7 @@ async function createRelation(data){
 
     secTitle.addEventListener("click",()=>{
         ul.classList.toggle("hidden");
+        secTitle.classList.toggle("down");
     })
 
     let page;
@@ -89,9 +87,11 @@ async function createRelation(data){
             ul.remove();
             return false;
         }
-        
+    }else if(data.data.items.length===0){
+        ul.remove();
+        return false;
     }
-
+secTitle.textContent+=" ("+data.data.items.length+")";
     console.log("ITEMS");
     console.log(data.data.items);
     data.data.items.forEach(el=>{

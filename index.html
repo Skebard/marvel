@@ -16,7 +16,7 @@
 <body>
     <header>
         <div class="left-nav">
-            <div class="logo">Logo</div>
+            <div class="logo"><img src="marvel.svg"></div>
             <div id="drop-down-btn" class="icon dropdown"><i class="fa fa-bars"></i></div>
 
             <ul id="categories-id" class="categories">
@@ -30,36 +30,21 @@
             <div class="search-wrapper">
                 <input id="search-id" class="input-search" type="text">
                 <ul id="suggestions-id" class="suggestions hidden">
-                    <!-- <li class="active">Suggestion 1</li>
-                    <li>Suggestion 2</li>
-                    <li>Suggestion 3</li>
-                    <li>Suggestion 4</li>
-                    <li>Suggestion 5</li>
-                    <li>Suggestion 6</li> -->
                 </ul>
             </div>
-            <i class="fas fa-search"></i>
+            <i id="search-btn-id" class="fas fa-search"></i>
         </div>
     </header>
     <main>
+        <div id="no-results-animation" class="glow-div hide no-results">
+            <img class="infinity" src="https://www.google.com/logos/fnbx/thanos/thanos_idle.png" style="display: block;">
+            <div id="snap-id" class="hide"></div>
+        </div>
         <div id="loading-id" class="img-container hidden">
             <img id="bnw" src="http://preview.ibb.co/kEMjQb/marvel.png" width="300">
             <img id="colored" src="http://preview.ibb.co/fhn2BG/marvel.jpg" width="300">
-          </div>
+        </div>
         <ul id="search-results-id" class="search-results comics">
-            <!-- <li>
-                <div class="poster">
-
-                </div>
-                <div class="info">
-                    <h2>Title</h2>
-                    <p>asfasdfasfa daf what am i doing this is a very good comic just read it come one don't be shy
-                    </p>
-                    <h3>more info<i class="plus">+</i></h3>
-                </div>
-            </li> -->
-
-
         </ul>
         <div id="numeration-id" class="pagination">
             <!-- <div class="prev-page-btn page-arrow"> << </div> -->
@@ -78,7 +63,7 @@
 
         </div>
 
-        <div  id="expanded-result-id" class="expanded-result">
+        <div id="expanded-result-id" class="expanded-result">
             <!-- <div class="main-card">
                 <img class="poster" src="http://i.annihil.us/u/prod/marvel/i/mg/8/c0/5e3dd3313a55a.jpg">
                 <div class="card-content">
@@ -129,7 +114,10 @@
 
 
     </main>
-    <footer></footer>
+    <footer>
+        <small class="data-from">Data from <a target="_blank" rel="noopener"
+                href="https://developer.marvel.com/">developer.marvel.com</a></small>
+    </footer>
 </body>
 
 </html>
