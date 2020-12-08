@@ -18,7 +18,6 @@ Card.prototype.create = function(){
     moreInfo.textContent = "more info +";
     moreInfo.classList.add("more-info");
     moreInfo.addEventListener("click",(e)=>{
-        console.log("more information");
         this.expand(this.html);
 
 
@@ -47,16 +46,12 @@ Card.prototype.expand = function(expandedHTML,relations){
     expandResult.insertAdjacentElement("afterbegin",mainCard);
 
     this.relations.forEach((rel)=>{
-        //console.log(rel);
         createRelation(rel);
     });
-    //expandResult.appendChild();
-    //relation -> {type:, data:,}
+
 }
 
 async function createRelation(data){
-    console.log("create");
-    console.log(data);
     let container = document.createElement("div");
     let secTitle = document.createElement("div");
     secTitle.className="title-dropdown";
@@ -73,8 +68,6 @@ async function createRelation(data){
 
     let page;
     let requests = [];
-    console.log("******* DATA ********")
-    console.log(data)
     if(data.data===undefined){
         ul.remove();
         return false;
@@ -83,7 +76,6 @@ async function createRelation(data){
         if(data.data.resourceURI){
             data.data.items = [{resourceURI:data.data.resourceURI}];
         }else{
-            console.log("remove");
             ul.remove();
             return false;
         }
@@ -92,8 +84,6 @@ async function createRelation(data){
         return false;
     }
 secTitle.textContent+=" ("+data.data.items.length+")";
-    console.log("ITEMS");
-    console.log(data.data.items);
     data.data.items.forEach(el=>{
         requests.push(fetch(el.resourceURI+ENDING_URL).then(response=>response.json()));
     });
@@ -101,7 +91,6 @@ secTitle.textContent+=" ("+data.data.items.length+")";
     let newData = values.map(el=>el.data.results[0]);
     page = new Page(1,newData,data.type,ul);
     page.display();
-    console.log(ul);
     return values;
 }
 
@@ -206,7 +195,5 @@ Creator.prototype.constructor = Creator;
 Creator.prototype.generateHTMLinfo = function(data){
     let title = document.createElement("h2");
     title.textContent = data.fullName;
-    //console.log(data.fullName);
-    //console.log(title);
     return [title];
 }

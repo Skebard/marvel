@@ -25,12 +25,6 @@ let noResultsAnimation = document.getElementById("no-results-animation");
 
 
 
-//! TO DO
-/**
- * Fix pagination 
- *  show more info
- *  link sries, comics,characters,creators
- */
 
 //Create Tries
 let comicsTrie = createTrie(comics);
@@ -49,7 +43,6 @@ selectCategory.addEventListener("click", (e) => {
         selectCategory.querySelector(".active").classList.remove("active");
         e.target.classList.add("active");
         currentCategory = e.target.textContent.toLowerCase();
-        console.log(currentCategory);
     }
 });
 
@@ -72,8 +65,10 @@ inputSearch.addEventListener("keyup", (e) => {
     if (inputSearch.value !== currentText) {
         currentText = inputSearch.value;
         //display new suggestions
-        displaySuggestions(currentText, comicsTrie);
-        if (autoSearch === true) {
+        if(currentCategory==='comics'){
+            displaySuggestions(currentText, comicsTrie);
+        }
+        if (autoSearch === true ) {
             clearTimeout(timeOut);
             timeOut = setTimeout(makeSearch, WAIT * 1000);
         }
@@ -93,7 +88,6 @@ inputSearch.addEventListener("keyup", (e) => {
 
 
 inputSearch.addEventListener("keydown", (e) => {
-    console.log(e.code);
     switch (e.key) {
         case "ArrowUp":
             prevSuggestion();
@@ -107,7 +101,9 @@ inputSearch.addEventListener("keydown", (e) => {
 });
 
 inputSearch.addEventListener("focus", () => {
-    suggestionsContainer.classList.remove("hidden");
+    if(currentCategory==='comics'){
+        suggestionsContainer.classList.remove("hidden");
+    }
 });
 
 
@@ -183,8 +179,6 @@ async function makeSearch() {
     
     inputSearch.value = currentText;
     suggestionsContainer.innerHTML = "";
-    console.log("*******************");
-    console.log(currentText);
     searchResults.innerHTML = "";
     pagination.innerHTML = "";
     expandResult.innerHTML ="";
@@ -195,7 +189,6 @@ async function makeSearch() {
     } else {
         searchWord = currentText;
     }
-    console.log(searchWord);
     if(myPaginator){
         if(myPaginator.loading===false){
             myPaginator = new Paginator(searchWord, currentCategory, searchResults, pagination,loading);
@@ -206,16 +199,13 @@ async function makeSearch() {
 
 
 
-    console.log("*******************");
 }
 
 function displaySuggestions(word, trie) {
-    console.log("******Suggestions*******");
     //in oder to find more results the words will be  trimmed and capitalized
     word = word.trim();
     if (word !== "") {
         word = capitalizeSentence(word);
-        console.log(word);
     }
 
     suggestionsContainer.innerHTML = "";
@@ -265,61 +255,9 @@ function prevSuggestion() {
 
 
 
-myTrie.insert("ant");
-myTrie.insert("anton");
-myTrie.insert("antonio");
-myTrie.insert("antZZZ");
-myTrie.insert("antYYY");
-myTrie.insert("an ant antonio")
-myTrie.insert("hi");
-myTrie.insert("hello");
-myTrie.insert("hint");
-myTrie.insert("bern");
-myTrie.insert("berny");
-myTrie.insert("berna");
-myTrie.insert("bernat");
-myTrie.insert("berny crack");
-
-
-// Not all the images have the same size but most of them have a ratius close to 1:1
-//characters 1:1
-//comics 550:850 px
-
-
-
-
-
-//characters
-//creators
-//series
-//comics
-//what can a card do?
 
 
 //the search displays all the similar results
-
-document.addEventListener("click", (e) => {
-
-    if (e.target.classList.contains("more-info")) {
-        console.log('pressed');
-        //dipslya infod
-    }
-});
-
-
-function displayInfo() {
-    //expand card
-    //paginator.expandCard(id)
-
-}
-
-
-
-
-
-
-
-
 
 
 
@@ -339,7 +277,6 @@ function getData(text, type, limit, offset) {
     requestUrl += "ts=" + TIME_STAMP + "&";
     requestUrl += "apikey=" + API_KEY + "&"
     requestUrl += "hash=" + HASH;
-    console.log(requestUrl);
     return fetch(requestUrl)
         .then(response => {
             if (!response.ok) {
@@ -348,7 +285,6 @@ function getData(text, type, limit, offset) {
             return response.json();
         })
         .then(data => {
-            console.log(data);
             return data;
         }).catch(error => console.log(error));
 }
@@ -373,9 +309,7 @@ async function getAll(type) {
             //promise all
         })
         .catch(error => console.log(error));
-    console.log(data);
     let apiRequests = [];
-    console.log(Math.ceil((data.total - 100) / MAX_LIMIT));
     for (let i = 0; i < Math.ceil((data.total - 100) / MAX_LIMIT); i++) {
         let nextRequestUrl = ROOT_URL + type + "?ts=" + TIME_STAMP + "&apikey=" + API_KEY + "&hash=" + HASH + "&limit=" + MAX_LIMIT + "&offset=" + (i + 1) * MAX_LIMIT;
         if (i > 399 && i < 450) { //!not done
@@ -383,15 +317,12 @@ async function getAll(type) {
         }
     }
     let pause = await Promise.all(apiRequests).then((data) => {
-        console.log(data);
         data.forEach(d => {
             names.push(...d.data.results.map(r => r.title));
         })
-        console.log(names);
+        
     })
-    console.log("hi");
     let prev = [];
-    console.log(localStorage.marvelComics);
     if (localStorage.marvelComics) {
         prev = JSON.parse(localStorage.marvelComics);
     }
@@ -400,11 +331,6 @@ async function getAll(type) {
     return names;
 }
 
-
-
-function loadTries() {
-
-}
 
 
 function createTrie(array) {

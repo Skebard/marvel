@@ -25,7 +25,6 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
         }
         else{
 
-            console.log("You are in the las page")
             return false;
         }
     }
@@ -36,7 +35,6 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
             let w = await this.pageN(prevPage);
             return true;
         }else{
-            console.log("you are in the first page");
             return false;
         }
     }
@@ -109,10 +107,8 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
                 if(w){
                     let prev = active.previousElementSibling;
                     if(prev.classList.contains("ellipsis")){
-                        console.log("Ellipsis");
                         let prevPrev = prev.previousElementSibling;
                         if(parseInt(prevPrev.textContent)===this.currentPage.id){
-                            console.log("remove ellipsis")
                             prev.remove();
                             prev = prevPrev;
                         }
@@ -128,7 +124,6 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
                 }
             }else if(e.target.classList.contains("next-page-btn")){
                 let w = await this.nextPage();
-                console.log(this.currentPage);
                 if(w){
                     let next = active.nextElementSibling;
                     if(next.classList.contains("ellipsis")){
@@ -155,7 +150,6 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
 
     }
     this.createLoadMore = function(){
-        console.log("more")
     }
 
     initialization(this);
@@ -165,7 +159,6 @@ function Paginator(text,type,pageContainer,paginationContainer=undefined,loading
         //let w = await Paginator.prototype.pageN.call(context,1);
         // option 2
         let w = await context.pageN(1);
-        console.log(context)
         if(context.pages[0].cards.length>0){    //what happens if we do not find any result
             context.createNumeration();
             context.btnEvents();
@@ -195,12 +188,10 @@ Paginator.prototype.pageN = async function(pageNumber){
     }
     let page;
     page = this.pages.filter(p=>p.id===pageNumber);
-    console.log(page);
     if(page.length){
         page = page[0];
     }else{
         let data = await getData(this.text,this.type,RESULTS_PER_PAGE,(pageNumber-1)*RESULTS_PER_PAGE);
-        console.log(data);
         if(!this.totalPages){
             this.totalPages = Math.ceil(data.data.total/RESULTS_PER_PAGE);
         }
@@ -266,54 +257,4 @@ function noResults(){
         noResultCont.classList.add("no-results");
     },1700);
 
-    console.log("no results");
 }
-
-
-
-/*
-
-characters
-    name
-    description
-    image
-
-comics
-    name/title  
-    description
-    dates
-    image
-series
-    title
-    description
-    image
-creators
-    firstName
-    middleName
-    lastName
-    fullName
-    image   most of them they don't have image -> what to do? put default image
-
-
-we have diffetent image sizes and relations
-
-*/
-
-
-    // let data = await getData("hulk","comics",4,0);
-    // console.log(data);
-    // console.log(data.data[1]);
-    // //let myData = data.data.results;
-    // // myData.forEach(d=>{
-    // //     let myComic = new Comic(d);
-    // //     myComic.create();
-    // // });
-
-//the paginator consists of Pages and the respective Numbers of those pages
-
-function Relation(card){
-
-}
-Relation.prototype.hide = function(){}
-Relation.prototype.display = function(){}
-Relation.prototype.create = function(){}
